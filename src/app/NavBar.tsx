@@ -1,16 +1,17 @@
 "use client"
 import Link from "next/link"
 import { CloseIcon, MenuIcon } from '@/components/Icons'
-import { useEffect, useState } from "react"
+import React, { HTMLProps, useEffect, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
 
-const NavBar = () => {
+const NavBar: React.FC<HTMLProps<HTMLDivElement>> = () => {
     const [openNav, setOpenNav] = useState(false);
     const pathname = usePathname();
+    const sidebarRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
         const handleOutSideClick = (event: MouseEvent) => {
-            if (openNav && !(event.target as HTMLElement).closest('.mobile-nav')) {
+            if (!sidebarRef.current?.contains(event.target as Node) || (event.target as HTMLElement).tagName === "A") {
                 setOpenNav(false);
             }
         }
@@ -37,12 +38,12 @@ const NavBar = () => {
                 </nav>
             </div>
             {/* MobileView */}
-            <div className="shadow-lg border border-slate-500 px-2 cursor-pointer sm:hidden block" onClick={() => setOpenNav(true)}>
+            <div className="mobile-nav shadow-lg border border-slate-500 px-2 cursor-pointer sm:hidden block" onClick={() => setOpenNav(true)}>
                 <MenuIcon />
             </div>
 
             {/* MobileView content */}
-            <div className={`h-full bg-slate-300 py-5 fixed top-0 right-0 w-[300px] shadow-lg transform z-[5000] ${openNav ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-500 ease-in-out flex flex-col`}>
+            <div ref={sidebarRef} className={`h-full bg-slate-300 py-5 fixed top-0 right-0 w-[300px] shadow-lg transform z-[5000] ${openNav ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-500 ease-in-out flex flex-col`}>
                 <div className="flex items-center justify-end px-4">
                     <CloseIcon onClick={() => setOpenNav(false)} className="cursor-pointer" />
                 </div>
@@ -57,6 +58,7 @@ const NavBar = () => {
                         <Link href='/hello' className="px-4">Hello</Link>
                     </li>
                 </ul>
+
             </div>
         </div>
     )
